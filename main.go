@@ -1,8 +1,8 @@
 package goWinRM
 
 import (
-	ps "github.com/gorillalabs/go-powershell"
-	"github.com/gorillalabs/go-powershell/backend"
+	ps "github.com/portofportland/go-powershell"
+	"github.com/portofportland/go-powershell/backend"
 )
 
 
