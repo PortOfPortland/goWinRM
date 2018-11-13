@@ -6,7 +6,7 @@ import (
 )
 
 
-func RunWinRMCommand(username string, password string, server string, command string, usessl string) (string, error) {
+func RunWinRMCommand(username string, password string, server string, command string, usessl string, usessh string) (string, error) {
 	// choose a backend
 	back := &backend.Local{}
 
@@ -19,8 +19,15 @@ func RunWinRMCommand(username string, password string, server string, command st
 	defer shell.Exit()
 
 	// ... and interact with it
-	var winRMPre string = "$SecurePassword = '" + password + "' | ConvertTo-SecureString -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential -ArgumentList '" + username + "', $SecurePassword; $s = New-PSSession -ComputerName " + server + " -Credential $cred"
-        var winRMPost string = "; Invoke-Command -Session $s -Scriptblock { " + command + " }; Remove-PSSession $s"
+	var winRMPre string
+
+    if (usessh == "1") {
+    	winRMPre = "$s = New-PSSession -HostName " + server + " -SSHTransport"
+    } else {
+        winRMPre = "$SecurePassword = '" + password + "' | ConvertTo-SecureString -AsPlainText -Force; $cred = New-Object System.Management.Automation.PSCredential -ArgumentList '" + username + "', $SecurePassword; $s = New-PSSession -ComputerName " + server + " -Credential $cred"
+	}
+
+    var winRMPost string = "; Invoke-Command -Session $s -Scriptblock { " + command + " }; Remove-PSSession $s"
 
 	// use SSL if requested
 	var winRMCommand string
